@@ -14,7 +14,7 @@ class DoubanspiderSpider(CrawlSpider):
     users_urls = 'https://www.douban.com/people'
 
     rules = (
-        Rule(LinkExtractor(allow=r'Items/'), callback='parse_item', follow=True),
+        Rule(LinkExtractor(allow=r''), callback='parse_item', follow=False),
     )
 
     def start_requests(self):
@@ -29,17 +29,32 @@ class DoubanspiderSpider(CrawlSpider):
     def after_login(self, response):
         for i in range(1000000, 999999999):
             url = self.users_urls + '/' + str(i) + '/'
-            yield scrapy.Request(url=url, callback=self.parse_users)
+            yield scrapy.Request(url=url,
+
+                                 callback=self.parse_users)
 
     def parse_users(self, response):
         # 爬取用户基本信息
         info = response.xpath("//div[@id='db-usr-profile']/div")
-        name = info.xpath(".//h1/text()").get().strip()
+        name = info.xpath(".//h1/text()").get()
         face = info.xpath(".//a/img/@src").get()
         item = UserInfoItem(name=name, face=face)
         yield item
 
+    def parse_movies(self, response):
+        # 爬取用户看过的电影
+        linkdiv = response.xpath("//div[@id='movie']/h2")
+        link = linkdiv.xpath(".//span[@class='pl']/a/@href").get()
+        print(link)
+        if not link:
+            return
+        else:
+            yield scrapy.Request(url=link, callback=self.parse_movies())
+        print(link)
+
     def parse_item(self, response):
+        # name = response.xpath("//div[@id='content']/h1/text()").get().strip()
+        # print(name)
         item = {}
         # item['domain_id'] = response.xpath('//input[@id="sid"]/@value').get()
         # item['name'] = response.xpath('//div[@id="name"]').get()
