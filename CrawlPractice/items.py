@@ -10,18 +10,23 @@ import scrapy
 
 class UserInfoItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
+    id = scrapy.Field()
     name = scrapy.Field()
     face = scrapy.Field()
 
 
 class FollowInfoItem(scrapy.Item):
-    name = scrapy.Field()
+    id = scrapy.Field()
     followers = scrapy.Field()
 
 
-class MovieInfoItem(scrapy.Item):
+class UserBookItem(scrapy.Item):
+    user_id = scrapy.Field()
+    book_id = scrapy.Field()
+
+
+class BookInfoItem(scrapy.Item):
     id = scrapy.Field()
-    name = scrapy.Field()
+    title = scrapy.Field()
     pic = scrapy.Field()
     info = scrapy.Field()

@@ -7,11 +7,11 @@
 import json
 import os
 from scrapy.exporters import JsonItemExporter
+from CrawlPractice.items import UserBookItem, BookInfoItem, UserInfoItem, FollowInfoItem
 
 
 class UserInfoItemPipeline(object):
     def __init__(self):
-        os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images')
         self.fp = open("users.json", 'wb')
         self.exporter = JsonItemExporter(self.fp,
                                          ensure_ascii=False,
@@ -19,7 +19,44 @@ class UserInfoItemPipeline(object):
         self.exporter.start_exporting()
 
     def process_item(self, item, spider):
-        self.exporter.export_item(item)
+        if isinstance(item, UserInfoItem):
+            self.exporter.export_item(item)
+        return item
+
+    def close_spider(self, spider):
+        self.exporter.finish_exporting()
+        self.fp.close()
+
+
+class UserBookItemPipeline(object):
+    def __init__(self):
+        self.fp = open("user-book.json", 'wb')
+        self.exporter = JsonItemExporter(self.fp,
+                                         ensure_ascii=False,
+                                         encoding='utf-8')
+        self.exporter.start_exporting()
+
+    def process_item(self, item, spider):
+        if isinstance(item, UserBookItem):
+            self.exporter.export_item(item)
+        return item
+
+    def close_spider(self, spider):
+        self.exporter.finish_exporting()
+        self.fp.close()
+
+
+class BookInfoItemPipeline(object):
+    def __init__(self):
+        self.fp = open("books.json", 'wb')
+        self.exporter = JsonItemExporter(self.fp,
+                                         ensure_ascii=False,
+                                         encoding='utf-8')
+        self.exporter.start_exporting()
+
+    def process_item(self, item, spider):
+        if isinstance(item, BookInfoItem):
+            self.exporter.export_item(item)
         return item
 
     def close_spider(self, spider):
